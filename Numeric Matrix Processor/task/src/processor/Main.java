@@ -56,6 +56,15 @@ class Matrix {
             System.out.println();
         }
     }
+    public Matrix scalarMultiply(int factor) throws Exception {
+        Matrix result = new Matrix(this.rows, this.cols);
+        for (int i = 0; i < result.rows; i++) {
+            for (int j = 0; j < result.cols; j++) {
+                result.matrix[i][j] = factor * this.matrix[i][j];
+            }
+        }
+        return result;
+    }
 }
 public class Main {
     private final static Scanner sc = new Scanner(System.in);
@@ -73,9 +82,11 @@ public class Main {
     public static void main(String[] args) {
         try {
             Matrix first = readMatrix();
-            Matrix second = readMatrix();
-            Matrix sum = Matrix.sum(first, second);
-            sum.printMatrix();
+//            Matrix second = readMatrix();
+//            Matrix sum = Matrix.sum(first, second);
+//            sum.printMatrix();
+            Matrix scalarResult = first.scalarMultiply(sc.nextInt());
+            scalarResult.printMatrix();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
