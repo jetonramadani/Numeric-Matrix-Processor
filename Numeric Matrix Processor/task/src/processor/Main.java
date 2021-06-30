@@ -14,6 +14,37 @@ class Matrix {
         this.cols = cols;
         this.matrix = new double[rows][cols];
     }
+
+    public static Matrix transposeSideDiagonal(Matrix first) throws Exception {
+        Matrix result = new Matrix(first.rows, first.cols);
+        for (int i = 0; i < first.rows; i++) {
+            for (int j = 0; j < first.cols; j++) {
+                result.matrix[i][j] = first.matrix[first.rows - j - 1][first.cols - i - 1];
+            }
+        }
+        return result;
+    }
+
+    public static Matrix transposeVertical(Matrix first) throws Exception {
+        Matrix result = new Matrix(first.rows, first.cols);
+        for (int i = 0; i < first.rows; i++) {
+            for (int j = 0; j < first.cols; j++) {
+                result.matrix[i][j] = first.matrix[i][first.cols - j - 1];
+            }
+        }
+        return result;
+    }
+
+    public static Matrix transposeHorizontal(Matrix first) throws Exception {
+        Matrix result = new Matrix(first.rows, first.cols);
+        for (int i = 0; i < first.rows; i++) {
+            for (int j = 0; j < first.cols; j++) {
+                result.matrix[i][j] = first.matrix[first.rows - i - 1][j];
+            }
+        }
+        return result;
+    }
+
     public void setElement(int i, int j, double element) throws Exception {
         if (i < 0 || j < 0 || i >= rows || j >= cols) {
             throw new Exception("Index out of bounds!");
@@ -56,7 +87,7 @@ class Matrix {
             System.out.println();
         }
     }
-    public static Matrix transpose(Matrix first) throws Exception {
+    public static Matrix transposeMainDiagonal(Matrix first) throws Exception {
         Matrix result = new Matrix(first.cols, first.rows);
         for (int i = 0; i < first.rows; i++) {
             for (int j = 0; j < first.cols; j++) {
@@ -77,7 +108,7 @@ class Matrix {
             throw new Exception("The operation cannot be performed.");
         }
         Matrix result = new Matrix(first.rows, second.cols);
-        second = transpose(second);
+        second = transposeMainDiagonal(second);
         for (int i = 0; i < result.rows; i++) {
             for (int j = 0; j < result.cols; j++) {
                 result.matrix[i][j] = multiply(first.matrix[i], second.matrix[j]);
@@ -123,11 +154,32 @@ public class Main {
         }
     }
     private static Matrix singleMatrix(int option) throws Exception {
-        Matrix first = readMatrix("");
+        Matrix first;
         switch (option) {
             case 2:
                 System.out.println("Enter constant: ");
+                first = readMatrix("");
                 return first.scalarMultiply(sc.nextDouble());
+            case 4:
+                System.out.println("1. Main diagonal\n" +
+                        "2. Side diagonal\n" +
+                        "3. Vertical line\n" +
+                        "4. Horizontal line");
+                System.out.println("Your choice: ");
+                int choice = sc.nextInt();
+                first = readMatrix("");
+                switch (choice) {
+                    case 1:
+                        return Matrix.transposeMainDiagonal(first);
+                    case 2:
+                        return Matrix.transposeSideDiagonal(first);
+                    case 3:
+                        return Matrix.transposeVertical(first);
+                    case 4:
+                        return Matrix.transposeHorizontal(first);
+                    default:
+                        return null;
+                }
             default:
                 return null;
 
@@ -140,6 +192,7 @@ public class Main {
                 System.out.println("1. Add matrices\n" +
                         "2. Multiply matrix by a constant\n" +
                         "3. Multiply matrices\n" +
+                        "4. Transpose matrix\n" +
                         "0. Exit");
                 System.out.println("Your choice: ");
                 int choice = sc.nextInt();
@@ -151,6 +204,7 @@ public class Main {
                         result = twoMatrices(choice);
                         break;
                     case 2:
+                    case 4:
                         result = singleMatrix(choice);
                         break;
                     case 0:
