@@ -125,6 +125,39 @@ class Matrix {
         }
         return result;
     }
+    private Matrix createDeterminantMatrix(int col) throws Exception {
+        Matrix res = new Matrix(this.rows - 1, this.cols - 1);
+        int moveJ;
+        for (int i = 1; i < this.rows; i++) {
+            moveJ = 0;
+            for (int j = 0; j < this.cols; j++) {
+                if (j != col) {
+                    res.matrix[i - 1][moveJ++] = this.matrix[i][j];
+                }
+            }
+        }
+        return res;
+    }
+    public double determinant() throws Exception {
+        if (this.cols != this.rows) {
+            throw new Exception("Cannot perform the action!");
+        }
+        if (this.cols == 1) {
+            return this.matrix[0][0];
+        } else if (this.cols == 2) {
+            return this.matrix[0][0] * this.matrix[1][1] -
+                    this.matrix[0][1] * this.matrix[1][0];
+        }
+        double res = 0;
+        int multiplier = 1;
+
+        for (int j = 0; j < this.cols; j++) {
+            res += multiplier * this.matrix[0][j] * this.createDeterminantMatrix(j).determinant();
+            multiplier *= -1;
+        }
+
+        return res;
+    }
 }
 public class Main {
     private final static Scanner sc = new Scanner(System.in);
@@ -157,8 +190,8 @@ public class Main {
         Matrix first;
         switch (option) {
             case 2:
-                System.out.println("Enter constant: ");
                 first = readMatrix("");
+                System.out.println("Enter constant: ");
                 return first.scalarMultiply(sc.nextDouble());
             case 4:
                 System.out.println("1. Main diagonal\n" +
@@ -180,6 +213,11 @@ public class Main {
                     default:
                         return null;
                 }
+            case 5:
+                first = readMatrix("");
+                System.out.println("The result is:");
+                System.out.println(first.determinant());
+                return null;
             default:
                 return null;
 
@@ -193,6 +231,7 @@ public class Main {
                         "2. Multiply matrix by a constant\n" +
                         "3. Multiply matrices\n" +
                         "4. Transpose matrix\n" +
+                        "5. Calculate a determinant\n" +
                         "0. Exit");
                 System.out.println("Your choice: ");
                 int choice = sc.nextInt();
@@ -205,6 +244,7 @@ public class Main {
                         break;
                     case 2:
                     case 4:
+                    case 5:
                         result = singleMatrix(choice);
                         break;
                     case 0:
