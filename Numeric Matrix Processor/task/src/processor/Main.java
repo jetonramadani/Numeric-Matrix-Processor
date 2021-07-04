@@ -125,16 +125,21 @@ class Matrix {
         }
         return result;
     }
-    private Matrix createDeterminantMatrix(int col) throws Exception {
+    private Matrix createDeterminantMatrix(int row, int col) throws Exception {
         Matrix res = new Matrix(this.rows - 1, this.cols - 1);
         int moveJ;
-        for (int i = 1; i < this.rows; i++) {
+        int moveI = 0;
+        for (int i = 0; i < this.rows; i++) {
+            if (i == row) {
+                continue;
+            }
             moveJ = 0;
             for (int j = 0; j < this.cols; j++) {
                 if (j != col) {
-                    res.matrix[i - 1][moveJ++] = this.matrix[i][j];
+                    res.matrix[moveI][moveJ++] = this.matrix[i][j];
                 }
             }
+            ++moveI;
         }
         return res;
     }
@@ -152,11 +157,20 @@ class Matrix {
         int multiplier = 1;
 
         for (int j = 0; j < this.cols; j++) {
-            res += multiplier * this.matrix[0][j] * this.createDeterminantMatrix(j).determinant();
+            res += multiplier * this.matrix[0][j] * this.createDeterminantMatrix(0, j).determinant();
             multiplier *= -1;
         }
 
         return res;
+    }
+    public Matrix inverse() throws Exception {
+        Matrix cofactors = new Matrix(this.rows, this.cols);
+        for (int i = 0; i < cofactors.rows; i++) {
+            for (int j = 0; j < cofactors.cols; j++) {
+                cofactors.matrix[i][j] = Math.pow(-1, i + 2 + j) * this.createDeterminantMatrix(i, j).determinant();
+            }
+        }
+        return transposeMainDiagonal(cofactors).scalarMultiply(1 / this.determinant());
     }
 }
 public class Main {
@@ -218,6 +232,9 @@ public class Main {
                 System.out.println("The result is:");
                 System.out.println(first.determinant());
                 return null;
+            case 6:
+                first = readMatrix("");
+                return first.inverse();
             default:
                 return null;
 
@@ -232,6 +249,7 @@ public class Main {
                         "3. Multiply matrices\n" +
                         "4. Transpose matrix\n" +
                         "5. Calculate a determinant\n" +
+                        "6. Inverse matrix\n" +
                         "0. Exit");
                 System.out.println("Your choice: ");
                 int choice = sc.nextInt();
@@ -245,6 +263,7 @@ public class Main {
                     case 2:
                     case 4:
                     case 5:
+                    case 6:
                         result = singleMatrix(choice);
                         break;
                     case 0:
